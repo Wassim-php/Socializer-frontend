@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.demo.controllers.PostController"
+      alignment="TOP_CENTER"
+      style="-fx-padding: 20;">
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Button text="⬅ Back" onAction="#goBack" />
+        <Label fx:id="userLabel" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+    </HBox>
+
+    <ImageView fx:id="postImageView" fitWidth="300" fitHeight="200" preserveRatio="true" />
+
+    <Label fx:id="captionLabel" wrapText="true" />
+
+    <Label text="Comments:" style="-fx-font-weight: bold;" />
+
+    <ListView fx:id="commentList" prefHeight="300" VBox.vgrow="ALWAYS" />
+
+    <HBox spacing="10">
+        <TextField fx:id="commentField" promptText="Write a comment..." HBox.hgrow="ALWAYS" />
+        <Button fx:id="addCommentButton" text="Post" onAction="#addComment" />
+    </HBox>
+</VBox>

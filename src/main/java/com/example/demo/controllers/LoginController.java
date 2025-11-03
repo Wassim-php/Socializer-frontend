@@ -1,0 +1,68 @@
+package com.example.demo.controllers;
+
+import com.example.demo.api.ApiClient;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.Parent;
+
+import java.io.IOException;
+
+public class LoginController {
+
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private Label statusLabel;
+
+    private final ApiClient api = new ApiClient() {}; // using anonymous subclass
+
+    @FXML
+    public void handleLogin(ActionEvent event) {
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+
+        if (username.isBlank() || password.isBlank()) {
+            statusLabel.setText("Please fill in all fields.");
+            return;
+        }
+
+        boolean success = api.login(username, password);
+
+        if (success) {
+            statusLabel.setText("✅ Login successful!");
+            openMainWindow();
+        } else {
+            statusLabel.setText("❌ Invalid username or password");
+        }
+    }
+
+    private void openMainWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/home-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Main Application");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void openRegister(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/register.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Register");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}

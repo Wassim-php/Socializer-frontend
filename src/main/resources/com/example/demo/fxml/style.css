@@ -1,0 +1,28 @@
+.root {
+    -fx-background-color: #f0f4f8;
+    -fx-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-font-size: 14px;
+}
+
+.text-field, .password-field {
+    -fx-pref-width: 200px;
+}
+.list-cell {
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-radius: 8;
+    -fx-padding: 4 10;
+}
+

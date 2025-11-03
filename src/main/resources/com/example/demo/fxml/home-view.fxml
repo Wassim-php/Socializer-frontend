@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.demo.controllers.HomeController"
+            prefWidth="600" prefHeight="800">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox spacing="10" style="-fx-background-color: white; -fx-border-color: lightgray; -fx-border-width: 0 0 1 0; -fx-padding: 10;">
+            <Label text="Socializer" style="-fx-font-weight: bold; -fx-font-size: 20;" />
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Profile" onAction="#openProfile" />
+            <Button text="Logout" onAction="#handleLogout" />
+        </HBox>
+    </top>
+
+    <!-- Feed Section -->
+    <center>
+        <ListView fx:id="postList" prefWidth="500" style="-fx-background-color: #fafafa;" />
+    </center>
+
+</BorderPane>
+
