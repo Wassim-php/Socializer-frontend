@@ -18,7 +18,7 @@
 ### Setup Instructions
 1. Clone the repo
 ```bash 
-git clone https://github.com/yourusername/Sociolizer-frontend.git
+git clone https://github.com/Wassim-php/Sociolizer-frontend.git
 ```
 2. Configure backend URL in src/main/resources/client.properties
 ```bash
