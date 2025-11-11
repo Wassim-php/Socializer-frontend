@@ -57,7 +57,7 @@ public class HomeController {
         ImageView postImageView = new ImageView();
         VBox postBox = new VBox(8);
         postBox.setPadding(new Insets(15));
-        postBox.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-background-radius: 10;");
+        postBox.setStyle("-fx-background-color: black; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-background-radius: 10;");
         postBox.setMaxWidth(Double.MAX_VALUE);
 
         // User
@@ -114,10 +114,10 @@ public class HomeController {
         // Caption
         Label captionLabel = new Label(post.getContent() != null ? post.getContent() : "");
         captionLabel.setWrapText(true);
-        captionLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #444;");
+        captionLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #faf7f7;");
 
         // Buttons
-        Button likeButton = new Button("❤️ " + post.getLikedUserIds().size());
+        Button likeButton = new Button("❤ " + post.getLikedUserIds().size());
         likeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 12;");
         Button commentButton = new Button("💬 Comments");
         commentButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 12;");

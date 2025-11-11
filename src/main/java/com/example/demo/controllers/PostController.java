@@ -151,7 +151,7 @@ public class PostController {
                             content.setStyle("-fx-text-fill: #555;");
 
                             // Delete button
-                            Button deleteButton = new Button("🗑️");
+                            Button deleteButton = new Button("🗑");
                             deleteButton.setOnAction(e -> {
                                 try {
                                     commentClient.delete(comment.getId());
@@ -160,7 +160,7 @@ public class PostController {
                                     ex.printStackTrace();
                                 }
                             });
-                            deleteButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+                            deleteButton.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand; -fx-font-size: 12;");
 
                             // Top section (username + delete button)
                             HBox topRow = new HBox(10, usernameLabel, deleteButton);

@@ -12,6 +12,7 @@ public class SocializerApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
+        scene.getStylesheets().add(getClass().getResource("/com/example/demo/css/style.css").toExternalForm());
         stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();

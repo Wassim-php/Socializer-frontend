@@ -2,25 +2,44 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<VBox spacing="20" alignment="CENTER" xmlns="http://javafx.com/javafx"
+<VBox spacing="25" alignment="CENTER"
+      xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.demo.controllers.LoginController"
-      style="-fx-background-color: #f0f4f8;"
-      stylesheets="@style.css">
+      style="-fx-background-color: #121212;"
+      prefWidth="400" prefHeight="500">
 
-    <Label text="Login" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+    <Label text="Welcome Back 👋"
+           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #BB86FC;" />
 
-    <GridPane hgap="10" vgap="10">
-        <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="usernameField" promptText="Enter username" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <VBox spacing="15" alignment="CENTER" style="-fx-background-color: #1E1E1E; -fx-padding: 40; -fx-background-radius: 16;">
+        <GridPane hgap="10" vgap="15">
+            <Label text="Username:"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"
+                   style="-fx-text-fill: #B0B0B0;" />
+            <TextField fx:id="usernameField"
+                       promptText="Enter username"
+                       GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       style="-fx-background-color: #2A2A2A; -fx-text-fill: white; -fx-background-radius: 8; -fx-prompt-text-fill: #888;" />
 
-        <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <PasswordField fx:id="passwordField" promptText="Enter password" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-    </GridPane>
+            <Label text="Password:"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0"
+                   style="-fx-text-fill: #B0B0B0;" />
+            <PasswordField fx:id="passwordField"
+                           promptText="Enter password"
+                           GridPane.rowIndex="1" GridPane.columnIndex="1"
+                           style="-fx-background-color: #2A2A2A; -fx-text-fill: white; -fx-background-radius: 8; -fx-prompt-text-fill: #888;" />
+        </GridPane>
 
-    <Button text="Login" onAction="#handleLogin" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"/>
-    <Label fx:id="statusLabel" text="" style="-fx-text-fill: red;"/>
+        <Button text="Login"
+                onAction="#handleLogin"
+                style="-fx-background-color: #BB86FC; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20;" />
+    </VBox>
+
+    <Label fx:id="statusLabel"
+           text=""
+           style="-fx-text-fill: #CF6679; -fx-font-size: 12px;" />
 </VBox>

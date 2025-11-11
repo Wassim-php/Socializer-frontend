@@ -1,0 +1,69 @@
+/* Global Backgrounds */
+.root, .main-container {
+    -fx-background-color: #121212;
+    -fx-text-fill: #EAEAEA;
+    -fx-font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 4, 0, 0, 2);
+    -fx-transition: all 0.3s;
+}
+.button:hover {
+    -fx-opacity: 0.9;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #EAEAEA;
+}
+
+/* Text Fields */
+.text-field, .password-field {
+    -fx-background-color: #1E1E1E;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #999999;
+    -fx-background-radius: 10;
+    -fx-border-color: #333333;
+    -fx-border-radius: 10;
+    -fx-padding: 8;
+}
+
+/* ListView (Posts or Comments) */
+.list-view {
+    -fx-background-color: #1A1A1A;
+    -fx-control-inner-background: #1A1A1A;
+    -fx-cell-hover-color: #2A2A2A;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+}
+
+/* Scrollbars */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+.scroll-bar .thumb {
+    -fx-background-color: #444;
+    -fx-background-radius: 5;
+}
+
+/* Post Section */
+#postImageView {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 2);
+    -fx-background-radius: 15;
+}
+
+/* Header Bar */
+.hbox {
+    -fx-background-color: #181818;
+    -fx-padding: 10;
+    -fx-border-color: #333;
+    -fx-border-width: 0 0 1 0;
+}

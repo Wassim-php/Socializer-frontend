@@ -8,22 +8,28 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.demo.controllers.HomeController"
-            prefWidth="600" prefHeight="800">
+            prefWidth="600" prefHeight="800"
+            style="-fx-background-color: #121212;">
 
     <!-- Top Bar -->
     <top>
-        <HBox spacing="10" style="-fx-background-color: white; -fx-border-color: lightgray; -fx-border-width: 0 0 1 0; -fx-padding: 10;">
-            <Label text="Socializer" style="-fx-font-weight: bold; -fx-font-size: 20;" />
+        <HBox spacing="10" style="-fx-background-color: #1E1E1E; -fx-padding: 15; -fx-alignment: center;">
+            <Label text="Socializer"
+                   style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 22;" />
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Profile" onAction="#openProfile" />
-            <Button text="Logout" onAction="#handleLogout" />
+            <Button text="Profile"
+                    style="-fx-background-color: transparent; -fx-text-fill: #BB86FC; -fx-font-weight: bold;"
+                    onAction="#openProfile" />
+            <Button text="Logout"
+                    style="-fx-background-color: #BB86FC; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 6 14;"
+                    onAction="#handleLogout" />
         </HBox>
     </top>
 
     <!-- Feed Section -->
     <center>
-        <ListView fx:id="postList" prefWidth="500" style="-fx-background-color: #fafafa;" />
+        <ListView fx:id="postList"
+                  prefWidth="500"
+                  style="-fx-background-color: #121212; -fx-control-inner-background: #1E1E1E; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10;" />
     </center>
-
 </BorderPane>
-
