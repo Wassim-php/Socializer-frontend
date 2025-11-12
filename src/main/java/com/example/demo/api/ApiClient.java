@@ -118,6 +118,39 @@ public abstract class ApiClient {
 
         return builder.build();
     }
+    // 📝 Register (shared)
+    public boolean register(String username, String password) {
+        try {
+            String body = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
+
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/api/auth/register"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+
+            if (resp.statusCode() == 200 || resp.statusCode() == 201) {
+                var json = mapper.readTree(resp.body());
+                if (json.has("token")) {
+                    jwtToken = json.get("token").asText();
+                    loggedIn = true;
+                }
+                System.out.println("✅ Registration successful: " + resp.body());
+                return true;
+            } else {
+                System.err.println("❌ Registration failed: " + resp.body());
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 
 

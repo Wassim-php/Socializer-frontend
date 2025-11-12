@@ -55,14 +55,24 @@ public class LoginController {
     @FXML
     public void openRegister(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/register.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/register-view.fxml"));
             Parent root = loader.load();
+
+            // Get current stage
             Stage stage = (Stage) usernameField.getScene().getWindow();
-            stage.setScene(new Scene(root));
+
+            // Create a new scene
+            Scene scene = new Scene(root);
+
+            // Add your CSS file (same as login)
+            scene.getStylesheets().add(getClass().getResource("/com/example/demo/css/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.setTitle("Register");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
