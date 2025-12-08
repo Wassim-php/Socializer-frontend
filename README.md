@@ -88,13 +88,7 @@ backend.baseUrl=http://localhost:7007
 - JavaFX runtime errors: ensure JavaFX is available on the module path or run from an IDE that configures it.
 - Uploads failing: check console logs, backend accessibility, and the `client.properties` URL.
 
-## Next steps I can help with
-- Run a Maven build locally and report compile errors.
-- Change the multipart field name to match your backend and re-test uploads.
-- Add more detailed request/response logging (headers+body) for upload debugging.
 
-## License
-Add a `LICENSE` file if you plan to publish this project.
 
 *** End README
 
