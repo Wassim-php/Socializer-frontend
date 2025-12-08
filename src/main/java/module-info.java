@@ -6,6 +6,9 @@ module com.example.demo {
     requires java.sql;
     requires com.fasterxml.jackson.datatype.jsr310;
     requires java.desktop;
+    requires javafx.graphics;
+
+
 
     opens com.example.demo to javafx.fxml;
     opens com.example.demo.model to com.fasterxml.jackson.databind;

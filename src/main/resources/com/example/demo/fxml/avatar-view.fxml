@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane fx:id="rootPane" prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.demo.controllers.AvatarController"
+            style="-fx-background-color: #121212;">
+
+    <Button fx:id="closeButton" text="Close" onAction="#handleClose"
+            AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0"
+            style="-fx-background-color: #BB86FC; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-weight: bold;"/>
+
+</AnchorPane>

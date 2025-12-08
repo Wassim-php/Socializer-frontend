@@ -34,6 +34,7 @@ public class HomeController {
 
     @FXML
     public void initialize() {
+    // Initialize home view and set up custom list cell factory
         postList.setItems(posts);
 
         // Custom cell layout
@@ -54,10 +55,10 @@ public class HomeController {
     }
 
     private VBox createPostBox(Post post) {
-        ImageView postImageView = new ImageView();
+    // Create the visual layout for a single post in the feed
         VBox postBox = new VBox(8);
         postBox.setPadding(new Insets(15));
-        postBox.setStyle("-fx-background-color: black; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-background-radius: 10;");
+        postBox.setStyle("-fx-background-color: #1E1E1E; -fx-border-color: #333; -fx-border-radius: 10; -fx-background-radius: 10;");
         postBox.setMaxWidth(Double.MAX_VALUE);
 
         // User
@@ -65,64 +66,57 @@ public class HomeController {
         try {
             user = userClient.getUserById(post.getUserId()).getData();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error fetching user: " + e.getMessage());
         }
-        Label userLabel = new Label(user != null && user.getUserName() != null ? user.getUserName() : "Unknown User");
-        userLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        final User finalUser = user;
+        Button userButton = new Button(user != null && user.getUserName() != null ? user.getUserName() : "Unknown User");
+        userButton.setStyle("-fx-font-weight: bold; -fx-font-size: 14; -fx-text-fill: white; -fx-background-color: #1E1E1E");
 
-        System.out.println("Post image URL: " + post.getImageUrl());
-        // Ensure ImageView has size and preserves ratio
-        postImageView.setFitWidth(400);   // adjust as needed
-        postImageView.setFitHeight(300);  // adjust as needed
-        postImageView.setPreserveRatio(true);
+        userButton.setOnAction(e -> openUserProfile(finalUser));
 
-        String imageUrl = post.getImageUrl(); // can be full URL or just filename
-        Image image = null;
+        // Only create ImageView if we have a valid image URL
+        String imageUrl = post.getImageUrl();
+        ImageView postImageView = null;
 
-        try {
-            if (imageUrl == null || imageUrl.isEmpty()) {
-                // No image, use local placeholder
-                image = new Image(getClass().getResource("/images/placeholder.png").toExternalForm());
-            } else {
-                // If it starts with http, use directly, else prepend backend URL
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                postImageView = new ImageView();
+                postImageView.setFitWidth(400);
+                postImageView.setFitHeight(300);
+                postImageView.setPreserveRatio(true);
+
                 if (!imageUrl.startsWith("http")) {
                     imageUrl = "http://localhost:7007/api/uploads/" + imageUrl;
                 }
 
-                // Load asynchronously in JavaFX
-                image = new Image(imageUrl, true);
+                Image image = new Image(imageUrl, true);
+                postImageView.setImage(image);
 
-                // Add listeners for debug
+                // Error handling for failed image loads
                 image.exceptionProperty().addListener((obs, oldEx, newEx) -> {
                     if (newEx != null) {
-                        System.out.println("Failed to load image: ");
-                        newEx.printStackTrace();
+                        System.out.println("Failed to load image from URL: ");
                     }
                 });
 
-                image.progressProperty().addListener((obs, oldProg, newProg) -> {
-                    System.out.println("Loading progress: " + (newProg.doubleValue() * 100) + "%");
-                });
+            } catch (Exception e) {
+                System.out.println("Error setting up image view: " + e.getMessage());
+                postImageView = null; // Don't add image view if setup fails
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // fallback placeholder
-            image = new Image(getClass().getResource("/images/placeholder.png").toExternalForm());
         }
-        postImageView.setImage(image);
 
         // Caption
         Label captionLabel = new Label(post.getContent() != null ? post.getContent() : "");
         captionLabel.setWrapText(true);
-        captionLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #faf7f7;");
+        captionLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #FFFFFF;");
 
         // Buttons
-        Button likeButton = new Button("❤ " + post.getLikedUserIds().size());
-        likeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 12;");
+        Button likeButton = new Button("❤ " + (post.getLikedUserIds() != null ? post.getLikedUserIds().size() : 0));
+        likeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 12; -fx-text-fill: #BB86FC;");
         Button commentButton = new Button("💬 Comments");
-        commentButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 12;");
+        commentButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 12; -fx-text-fill: #BB86FC;");
         Button deleteButton = new Button("🗑 Delete");
-        deleteButton.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand; -fx-font-size: 12;");
+        deleteButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #CF6679; -fx-cursor: hand; -fx-font-size: 12;");
 
         likeButton.setOnAction(e -> handleLike(post));
         commentButton.setOnAction(e -> openPostDetails(post));
@@ -131,13 +125,20 @@ public class HomeController {
         HBox actions = new HBox(15, likeButton, commentButton, deleteButton);
         actions.setAlignment(Pos.CENTER_LEFT);
 
-        postBox.getChildren().addAll(userLabel, postImageView, captionLabel, actions);
+        // Build the post box dynamically
+        postBox.getChildren().add(userButton);
+        if (postImageView != null) {
+            postBox.getChildren().add(postImageView);
+        }
+        postBox.getChildren().addAll(captionLabel, actions);
+
         return postBox;
     }
 
 
 
     private void handleLike(Post post) {
+    // Send like request for a post and refresh feed
         try {
             postClient.likePost(post.getId());
             refreshPosts();
@@ -147,6 +148,7 @@ public class HomeController {
     }
 
     private void handleDelete(Post post) {
+    // Delete a post and refresh feed
         try {
             postClient.delete(post.getId());
             refreshPosts();
@@ -156,6 +158,7 @@ public class HomeController {
     }
 
     private void refreshPosts() {
+    // Reload posts from backend and update list view
         try {
             ApiResponse<List<Post>> response = postClient.fetchPosts();
             posts.clear();
@@ -172,6 +175,7 @@ public class HomeController {
     }
 
     private void openPostDetails(Post post) {
+    // Open the detailed post view for the selected post
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/post-view.fxml"));
             Scene scene = new Scene(loader.load());
@@ -188,11 +192,23 @@ public class HomeController {
 
     @FXML
     private void openProfile() {
-        System.out.println("Profile screen not implemented yet");
+    // Navigate to the current user's profile view
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/profile-view.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) postList.getScene().getWindow();
+
+            stage.setScene(scene);
+            stage.show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @FXML
     private void handleLogout() {
+    // Logout and return to login view
         try {
             // 1️⃣ Logout from backend & clear local session
             ApiClient client = new ApiClient() {}; // anonymous subclass to access method
@@ -210,6 +226,22 @@ public class HomeController {
             stage.show();
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openUserProfile(User user) {
+    // Open another user's profile view
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/user-profile-view.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            UserProfileController controller = loader.getController();
+            controller.setUser(user);
+
+            Stage stage = (Stage) postList.getScene().getWindow();
+            stage.setScene(scene);
+        }catch (Exception e){
             e.printStackTrace();
         }
     }

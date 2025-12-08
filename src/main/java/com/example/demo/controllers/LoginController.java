@@ -21,6 +21,7 @@ public class LoginController {
 
     @FXML
     public void handleLogin(ActionEvent event) {
+        // Handle login button click: validate fields and perform login
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -41,6 +42,7 @@ public class LoginController {
 
     private void openMainWindow() {
         try {
+            // Open the main application window (home view) after successful login
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/home-view.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) usernameField.getScene().getWindow();
@@ -55,6 +57,7 @@ public class LoginController {
     @FXML
     public void openRegister(ActionEvent event) {
         try {
+            // Open the registration view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/register-view.fxml"));
             Parent root = loader.load();
 

@@ -18,7 +18,7 @@ public class CommentClient extends ApiClient {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
-
+    // Fetch all comments
     public ApiResponse<List<Comment>> fetchComments() throws IOException, InterruptedException {
         HttpRequest req = buildAuthorizedRequest("/api/comments/all", "GET", null);
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
@@ -35,6 +35,7 @@ public class CommentClient extends ApiClient {
     }
 
     public ApiResponse<Comment> getCommentById(Long id) throws IOException, InterruptedException {
+    // Fetch a single comment by id
         HttpRequest req = buildAuthorizedRequest("/api/comments/" + id, "GET", null);
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
 
@@ -50,6 +51,7 @@ public class CommentClient extends ApiClient {
     }
 
     public ApiResponse<Comment> createComment(Comment comment) throws IOException, InterruptedException {
+    // Create a new comment
         String json = mapper.writeValueAsString(comment);
 
         HttpRequest req = buildAuthorizedRequest("/api/comments/create", "POST", json);
@@ -67,6 +69,7 @@ public class CommentClient extends ApiClient {
     }
 
     public ApiResponse<Comment> updateComment(Long id, Comment comment) throws IOException, InterruptedException{
+    // Update existing comment
         String json = mapper.writeValueAsString(comment);
         HttpRequest req = buildAuthorizedRequest("/api/comments/update/" + id, "PUT", json);
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
@@ -83,6 +86,7 @@ public class CommentClient extends ApiClient {
     }
 
     public ApiResponse<Void> delete(Long id) throws IOException, InterruptedException{
+    // Delete a comment by id
         HttpRequest req = buildAuthorizedRequest("/api/comments/delete/"+ id, "DELETE", null);
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
 
@@ -98,6 +102,7 @@ public class CommentClient extends ApiClient {
     }
 
     public ApiResponse<List<Comment>> getCommentsByPostId(Long id)  throws IOException, InterruptedException {
+    // Get comments for a specific post
         HttpRequest req = buildAuthorizedRequest("/api/comments/all/" +id, "GET", null);
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
 

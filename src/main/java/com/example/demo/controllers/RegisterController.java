@@ -20,6 +20,8 @@ public class RegisterController {
     private final ApiClient api = new ApiClient() {}; // dummy client
 
     @FXML
+
+    // Handle registration action: validate and call API
     public void handleRegister(ActionEvent event) {
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
@@ -41,6 +43,8 @@ public class RegisterController {
 
 
     @FXML
+
+    // Navigate back to login view
     public void openLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/login.fxml"));

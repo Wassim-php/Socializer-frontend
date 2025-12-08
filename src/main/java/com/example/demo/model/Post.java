@@ -20,8 +20,11 @@ public class Post {
     private List<Long> commentIds;
     private Set<Long> likedUserIds = new HashSet<>();
 
+
+    // Default constructor
     public Post() {}
 
+    // Constructor used by Jackson to create a Post from JSON
     public Post (
         @JsonProperty("id") Long id,
         @JsonProperty("content") String content,
@@ -43,66 +46,82 @@ public class Post {
     }
 
     public Long getId(){
+    // Get post id
         return id;
     }
 
     public void setId(Long id){
+    // Set post id
         this.id = id;
     }
 
     public String getContent() {
+    // Get post content
         return content;
     }
 
     public void setContent(String content) {
+    // Set post content
         this.content = content;
     }
 
     public String getImageUrl() {
+    // Get image URL or filename
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
+    // Set image URL or filename
         this.imageUrl = imageUrl;
     }
 
     public LocalDateTime getCreatedAt() {
+    // Get creation timestamp
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
+    // Set creation timestamp
         this.createdAt = createdAt;
     }
 
     public Long getUserId() {
+    // Get owner user id
         return userId;
     }
 
     public void setUserId(Long userId) {
+    // Set owner user id
         this.userId = userId;
     }
 
     public Long getTagId() {
+    // Get tag id
         return tagId;
     }
 
     public void setTagId(Long tagId) {
+    // Set tag id
         this.tagId = tagId;
     }
 
     public List<Long> getCommentIds() {
+    // Get list of comment ids
         return commentIds;
     }
 
     public void setCommentIds(List<Long> commentIds) {
+    // Set list of comment ids
         this.commentIds = commentIds;
     }
 
     public Set<Long> getLikedUserIds() {
+    // Get set of user ids who liked this post
         return likedUserIds;
     }
 
     public void setLikedUserIds(Set<Long> likedUserIds) {
+    // Set likes by user ids
         this.likedUserIds = likedUserIds;
     }
 }

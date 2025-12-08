@@ -9,6 +9,9 @@ import java.io.IOException;
 
 public class SocializerApplication extends Application {
     @Override
+    /**
+     * Start the JavaFX application and show the login scene.
+     */
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());

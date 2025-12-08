@@ -2,9 +2,11 @@ package com.example.demo.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
+import java.nio.file.Files;
 import java.util.Properties;
 
 public abstract class ApiClient {
@@ -26,7 +28,16 @@ public abstract class ApiClient {
         }
     }
 
-    // 🔑 Login (shared)
+    // Update stored JWT token (used when backend returns a refreshed token)
+    protected static void updateJwtToken(String newToken) {
+        if (newToken != null && !newToken.isEmpty()) {
+            jwtToken = newToken;
+            loggedIn = true;
+            System.out.println("🔑 Local JWT token updated successfully via X-New-Auth-Token header.");
+        }
+    }
+
+    // Authenticate and store JWT on success
     public boolean login(String username, String password) {
         try {
             String body = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
@@ -57,6 +68,7 @@ public abstract class ApiClient {
         }
     }
 
+    // Logout on the server and clear local session state
     public boolean logout() {
         try {
             if (!isLoggedIn()) {
@@ -91,11 +103,11 @@ public abstract class ApiClient {
 
 
 
+    // Return true if a JWT is present and loggedIn flag is set
     public static boolean isLoggedIn() {
         return loggedIn && jwtToken != null && !jwtToken.isEmpty();
     }
-
-    // 🌍 Unified helper for ANY request method
+    // Build HTTP request and attach Authorization header when available
     protected HttpRequest buildAuthorizedRequest(String endpoint, String method, String jsonBody) {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + endpoint))
@@ -118,7 +130,7 @@ public abstract class ApiClient {
 
         return builder.build();
     }
-    // 📝 Register (shared)
+    // Register a new user and capture token if returned
     public boolean register(String username, String password) {
         try {
             String body = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
@@ -149,7 +161,70 @@ public abstract class ApiClient {
             e.printStackTrace();
             return false;
         }
+
+
+
     }
+
+    // Upload a binary file using multipart/form-data and return the server response
+    public String uploadFile(File file) throws IOException, InterruptedException {
+        // Build multipart body and log request/response for debugging
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+
+        String boundary = "Boundary-" + System.currentTimeMillis();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("--").append(boundary).append("\r\n");
+        sb.append("Content-Disposition: form-data; name=\"file\"; filename=\"").append(file.getName()).append("\"\r\n");
+        sb.append("Content-Type: ").append(getContentType(file.getName())).append("\r\n");
+        sb.append("Content-Transfer-Encoding: binary\r\n\r\n");
+
+        byte[] headerBytes = sb.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] footerBytes = ("\r\n--" + boundary + "--\r\n").getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        // Combine parts
+        byte[] body = new byte[headerBytes.length + fileBytes.length + footerBytes.length];
+        System.arraycopy(headerBytes, 0, body, 0, headerBytes.length);
+        System.arraycopy(fileBytes, 0, body, headerBytes.length, fileBytes.length);
+        System.arraycopy(footerBytes, 0, body, headerBytes.length + fileBytes.length, footerBytes.length);
+
+        HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/uploads"))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofByteArray(body));
+
+        if (jwtToken != null && !jwtToken.isEmpty()) {
+            reqBuilder.header("Authorization", "Bearer " + jwtToken);
+        } else {
+            System.err.println("⚠️ uploadFile called without JWT token — request will be unauthenticated");
+        }
+
+        HttpRequest request = reqBuilder.build();
+
+        System.out.println("Uploading file to: " + request.uri() + " (size=" + body.length + " bytes)");
+
+        HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Upload response status: " + response.statusCode());
+        System.out.println("Upload response body: " + response.body());
+
+        if (response.statusCode() == 200 || response.statusCode() == 201) {
+            return response.body();
+        } else {
+            throw new IOException("Upload failed with status: " + response.statusCode() + ", response: " + response.body());
+        }
+    }
+
+    // Determine content type from file extension
+    private String getContentType(String filename) {
+        if (filename.toLowerCase().endsWith(".png")) return "image/png";
+        if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".jpeg")) return "image/jpeg";
+        if (filename.toLowerCase().endsWith(".gif")) return "image/gif";
+        if (filename.toLowerCase().endsWith(".bmp")) return "image/bmp";
+        return "application/octet-stream";
+    }
+
 
 
 

@@ -10,8 +10,11 @@ public class Comment {
     private Long userId;
     private Post post;
 
+  
+    // Default constructor
     public Comment() {}
 
+    // Constructor used by Jackson to deserialize a Comment
     public Comment(
             @JsonProperty("id") Long id,
             @JsonProperty("content") String content,
@@ -27,41 +30,51 @@ public class Comment {
     }
 
     public Long getId() {
+    // Get comment id
         return id;
     }
     public String getContent() {
+    // Get comment content
         return content;
     }
     public LocalDateTime getCreatedAt() {
+    // Get creation timestamp
         return createdAt;
     }
 
     public Post getPost() {
+    // Get associated post
         return post;
     }
 
     public void setPost(Post post) {
+    // Set associated post
         this.post = post;
     }
 
     public Long getUserId(){
+    // Get user id who authored the comment
         return userId;
     }
     public void setUser(Long userId) {
+    // Set user id for comment
         this.userId = userId;
     }
 
 
     public void setId(Long id) {
+    // Set comment id
         this.id = id;
     }
 
 
     public void setContent(String content) {
+    // Set comment content
         this.content = content;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
+    // Set creation timestamp
         this.createdAt = createdAt;
     }
 

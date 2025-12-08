@@ -16,8 +16,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -57,66 +55,70 @@ public class PostController {
     }
 
     private void loadPostDetails() {
+    // Load post metadata, image and comments into the view
         if (post == null) return;
+
         User user = null;
-        try{
+        try {
             user = userClient.getUserById(post.getUserId()).getData();
-        }catch(Exception e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error fetching user: " + e.getMessage());
         }
-        userLabel.setText(user.getUserName());
-        captionLabel.setText(post.getContent());
+
+        userLabel.setText(user != null ? user.getUserName() : "Unknown User");
+        captionLabel.setText(post.getContent() != null ? post.getContent() : "");
 
         System.out.println("Post image URL: " + post.getImageUrl());
-        // Ensure ImageView has size and preserves ratio
-        postImageView.setFitWidth(400);   // adjust as needed
-        postImageView.setFitHeight(300);  // adjust as needed
+
+        // Configure ImageView
+        postImageView.setFitWidth(400);
+        postImageView.setFitHeight(300);
         postImageView.setPreserveRatio(true);
 
-        String imageUrl = post.getImageUrl(); // can be full URL or just filename
-        Image image = null;
+        String imageUrl = post.getImageUrl();
 
-        try {
-            if (imageUrl == null || imageUrl.isEmpty()) {
-                // No image, use local placeholder
-                image = new Image(getClass().getResource("/images/placeholder.png").toExternalForm());
-            } else {
-                // If it starts with http, use directly, else prepend backend URL
+        // Only load image if we have a valid URL
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
                 if (!imageUrl.startsWith("http")) {
                     imageUrl = "http://localhost:7007/api/uploads/" + imageUrl;
                 }
 
                 // Load asynchronously in JavaFX
-                image = new Image(imageUrl, true);
+                Image image = new Image(imageUrl, true);
+                postImageView.setImage(image);
 
                 // Add listeners for debug
                 image.exceptionProperty().addListener((obs, oldEx, newEx) -> {
                     if (newEx != null) {
-                        System.out.println("Failed to load image: ");
-                        newEx.printStackTrace();
+                        System.out.println("Failed to load post image from URL: " );
+                        // Clear the image view if loading fails
+                        postImageView.setImage(null);
                     }
                 });
 
                 image.progressProperty().addListener((obs, oldProg, newProg) -> {
-                    System.out.println("Loading progress: " + (newProg.doubleValue() * 100) + "%");
+                    System.out.println("Loading progress for " + ": " + (newProg.doubleValue() * 100) + "%");
                 });
+
+            } catch (Exception e) {
+                System.out.println("Error setting up image view: " + e.getMessage());
+                postImageView.setImage(null); // Clear if setup fails
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // fallback placeholder
-            image = new Image(getClass().getResource("/images/placeholder.png").toExternalForm());
+        } else {
+            // No image URL - clear the image view
+            postImageView.setImage(null);
         }
-        postImageView.setImage(image);
 
         loadComments();
-
         addCommentButton.setOnAction(e -> addComment());
     }
 
     private void loadComments() {
+    // Load comments for the current post and render them in the list
         try {
             ApiResponse<List<Comment>> response = commentClient.getCommentsByPostId(post.getId());
-            System.out.println("Comments: "+response.getData());
+            System.out.println("Comments: " + response.getData());
             comments.clear();
             if (response.isState() && response.getData() != null) {
                 comments.addAll(response.getData());
@@ -179,7 +181,6 @@ public class PostController {
                 }
             });
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -187,6 +188,7 @@ public class PostController {
 
     @FXML
     private void addComment() {
+    // Add a new comment to the post
         String content = commentField.getText().trim();
         if (content.isEmpty()) return;
 
@@ -204,6 +206,7 @@ public class PostController {
 
     @FXML
     private void goBack() {
+    // Return to the home view
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/example/demo/fxml/home-view.fxml"));
             javafx.scene.Scene scene = new javafx.scene.Scene(loader.load());
