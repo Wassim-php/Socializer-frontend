@@ -11,6 +11,14 @@ What's included
 - Comments: add comments from the post detail screen; comments are shown in a `ListView` in `post-view.fxml`.
 - Profile actions: profile and ownership checks are implemented in controllers to show/hide edit and delete actions for posts owned by the current user.
 
+
+## Quickstart
+```powershell
+git clone https://github.com/Wassim-php/Socializer-backend.git
+cd "d:/Java Tech"
+```
+
+
 Project layout (key files and folders)
 - `src/main/java/com/example/demo`
   - `Launcher.java`, `SocializerApplication.java` — app bootstrap and JavaFX startup
