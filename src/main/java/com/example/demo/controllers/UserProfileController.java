@@ -22,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class UserProfileController {
@@ -45,7 +46,7 @@ public class UserProfileController {
     @FXML
     private Button showFollowingBtn;
     @FXML
-    private VBox avatarContainer; // NEW FXML FIELD FOR CLICKABLE AREA
+    private VBox avatarContainer;
 
     private User viewedUser;
     private User currentUser;
@@ -86,7 +87,7 @@ public class UserProfileController {
             // Start by showing followers
             handleShowFollowers();
 
-            // NEW: Set click handler on the avatar container
+            // Set click handler on the avatar container
             if (avatarContainer != null) {
                 avatarContainer.setOnMouseClicked(e -> handleViewAvatar());
             }
@@ -339,8 +340,6 @@ public class UserProfileController {
         // This should only be enabled if viewedUser == currentUser
     }
 
-    // NEW: Method to load the Avatar View
-
     // Open avatar 3D view for the viewed user
     @FXML
     private void handleViewAvatar() {
@@ -362,11 +361,11 @@ public class UserProfileController {
         }
     }
 
-
+    // Method to create a clickable post thumbnail
     private Node createThumbnail(Post post) {
         StackPane wrapper = new StackPane();
         wrapper.setPrefSize(140, 140);
-        wrapper.setStyle("-fx-background-color: #1E1E1E; -fx-border-color: #333333; -fx-border-radius: 8;");
+        wrapper.setStyle("-fx-background-color: #1E1E1E; -fx-border-color: #333333; -fx-border-radius: 8; -fx-cursor: hand;"); // Added -fx-cursor: hand;
 
         ImageView img = new ImageView();
         img.setFitWidth(140);
@@ -381,11 +380,37 @@ public class UserProfileController {
             img.setImage(new Image(url, true));
         } else {
             img.setImage(null);
-            wrapper.setStyle("-fx-background-color: #BB86FC; -fx-border-color: #3700B3; -fx-border-radius: 8;");
+            wrapper.setStyle("-fx-background-color: #BB86FC; -fx-border-color: #3700B3; -fx-border-radius: 8; -fx-cursor: hand;");
         }
 
         wrapper.getChildren().add(img);
 
+        // --- NEW CLICK HANDLER ---
+        wrapper.setOnMouseClicked(event -> handleViewPost(post, wrapper.getScene()));
+
         return wrapper;
+    }
+
+    // NEW: Method to handle post click and navigate to PostView
+    private void handleViewPost(Post post, Scene currentScene) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/fxml/post-view.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            Object controller = loader.getController();
+            if (controller instanceof PostController) {
+                ((PostController) controller).setPost(post);
+            } else {
+                System.err.println("Controller loaded is not PostViewController or setPost method is missing.");
+                return;
+            }
+
+            Stage stage = (Stage) currentScene.getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Failed to load post view: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
