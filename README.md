@@ -15,7 +15,6 @@ What's included
 ## Quickstart
 ```powershell
 git clone https://github.com/Wassim-php/Socializer-frontend.git
-cd "d:/Java Tech"
 ```
 
 
