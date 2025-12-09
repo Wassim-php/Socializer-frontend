@@ -10,6 +10,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -29,8 +32,9 @@ public class AvatarController {
     private double mouseY;
     private User user;
 
-    
-    // Set the user whose avatar will be shown and rebuild the model
+    private Text followerCountText = new Text("0 Followers"); // Component to hold the 3D text
+
+
     public void setUser(User user) {
         this.user = user;
 
@@ -39,21 +43,22 @@ public class AvatarController {
         avatarModel = createBasicAvatar();
         worldRoot.getChildren().add(avatarModel);
 
+        // Update the follower count display
+        updateFollowerDisplay();
+
         if (subScene != null) {
             addInteractionHandlers(subScene);
         }
     }
 
     @FXML
-    // Initialize 3D scene, camera and lighting
     public void initialize() {
         setupCamera();
         setupLighting();
         setupSubScene();
     }
 
-   
-    // Configure perspective camera for the 3D scene
+
     private void setupCamera() {
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);
@@ -61,8 +66,7 @@ public class AvatarController {
         camera.setTranslateY(-100);
     }
 
-   
-    // Add ambient and point lighting to the 3D scene
+
     private void setupLighting() {
         AmbientLight ambient = new AmbientLight(Color.web("#3700B3", 0.3));
         worldRoot.getChildren().add(ambient);
@@ -75,7 +79,6 @@ public class AvatarController {
     }
 
     private Group createBasicAvatar() {
-    // Create a simple 3D avatar composed of basic shapes
         String userColorHex = (user != null && user.getAvatarColorHex() != null)
                 ? user.getAvatarColorHex()
                 : "#BB86FC";
@@ -84,9 +87,12 @@ public class AvatarController {
         PhongMaterial limbMaterial = new PhongMaterial(Color.web("#CCCCCC"));
 
         // CORE COMPONENTS
-        Sphere head = new Sphere(50);
-        head.setMaterial(primaryMaterial);
-        head.setTranslateY(-100);
+        Sphere headSphere = new Sphere(50);
+        headSphere.setMaterial(primaryMaterial);
+
+        // Wrap the head sphere in a Group to allow for centered rotation (Gaze Tracking)
+        Group headGroup = new Group(headSphere);
+        headGroup.setTranslateY(-100);
 
         double bodyWidth = 100;
         double bodyHeight = 200;
@@ -122,17 +128,18 @@ public class AvatarController {
         leftLeg.setTranslateX(-(bodyWidth / 4));
         leftLeg.setTranslateY(50 + bodyHeight / 2 + legHeight / 2);
 
-        Group avatar = new Group(head, body,
+        // Use headGroup in the main avatar Group
+        Group avatar = new Group(headGroup, body,
                 rightArm, leftArm,
-                rightLeg, leftLeg);
+                rightLeg, leftLeg,
+                followerCountText); // ADD TEXT TO THE AVATAR GROUP
 
         avatar.setTranslateY(-100);
 
         return avatar;
     }
 
-    
-    // Create and attach SubScene containing the 3D world
+
     private void setupSubScene() {
         subScene = new SubScene(worldRoot, 800, 600, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.web("#121212"));
@@ -144,9 +151,25 @@ public class AvatarController {
         rootPane.getChildren().add(0, subScene);
     }
 
-   
-    // Add mouse drag handlers to rotate the avatar model
+    private void updateFollowerDisplay() {
+        if (user != null) {
+            String count = (user.getFollowersCount() > 0) ? String.valueOf(user.getFollowersCount()) : "0";
+
+            followerCountText.setText(count + " Followers");
+            followerCountText.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+            followerCountText.setFill(Color.web("#03DAC6")); // Bright cyan color for visualization
+
+            // Position the text slightly above the head sphere (radius 50)
+            followerCountText.setTranslateY(-200);
+
+            // Ensures the text is always perpendicular to the camera to be readable
+            followerCountText.getTransforms().add(new Rotate(180, Rotate.Y_AXIS));
+        }
+    }
+
     private void addInteractionHandlers(SubScene subScene) {
+
+        // 1. Setup Avatar Drag Rotation
         avatarModel.getTransforms().clear();
 
         Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
@@ -172,11 +195,50 @@ public class AvatarController {
             mouseX = event.getSceneX();
             mouseY = event.getSceneY();
         });
+
+        // ----------------------------------------------------
+        // 2. Setup Gaze Tracking (Look-At Feature)
+
+        // Head Group is the first element in avatarModel's children (before the body)
+        Group headGroup = (Group) avatarModel.getChildren().get(0);
+
+        // Rotations are centered at the neck pivot point (Y=100 relative to headGroup's translation)
+        Rotate gazeRotateX = new Rotate(0, 0, 100, 0, Rotate.X_AXIS);
+        Rotate gazeRotateY = new Rotate(0, 0, 100, 0, Rotate.Y_AXIS);
+
+        headGroup.getTransforms().addAll(gazeRotateX, gazeRotateY);
+
+        subScene.setOnMouseMoved(event -> {
+            // Get mouse position relative to the center of the SubScene
+            double centerX = subScene.getWidth() / 2;
+            double centerY = subScene.getHeight() / 2;
+
+            double mouseX = event.getSceneX();
+            double mouseY = event.getSceneY();
+
+            // Calculate offsets
+            double dx = mouseX - centerX;
+            double dy = mouseY - centerY;
+
+            // Map movement to small angles, clamping the value
+            final double MAX_GAZE_ANGLE = 15.0; // Max degrees the head can turn
+            final double SCALE_FACTOR = 0.1; // Sensitivity
+
+            // X rotation (tilting up/down)
+            double rotationX = Math.min(Math.max(-dy * SCALE_FACTOR, -MAX_GAZE_ANGLE), MAX_GAZE_ANGLE);
+
+            // Y rotation (turning left/right)
+            double rotationY = Math.min(Math.max(dx * SCALE_FACTOR, -MAX_GAZE_ANGLE), MAX_GAZE_ANGLE);
+
+            // Apply the rotation
+            gazeRotateY.setAngle(rotationY);
+            gazeRotateX.setAngle(rotationX);
+        });
+        // ----------------------------------------------------
     }
 
 
-    
-    // Close avatar view and return to profile
+
     @FXML
     private void handleClose() {
         try {
